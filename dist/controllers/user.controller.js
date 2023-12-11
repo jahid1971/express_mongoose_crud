@@ -1,25 +1,33 @@
-import { Request, Response } from "express";
-import { userServices } from "../services/user.service";
-import { IUser, IUserUpdate } from "../interfaces/user.interface";
-import { userCreateValidationSchema, userUpdateValidationSchema } from "../validation/user.validation";
-
-const createUser = async (req: Request, res: Response) => {
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userController = void 0;
+const user_service_1 = require("../services/user.service");
+const user_validation_1 = require("../validation/user.validation");
+const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userData = req.body;
-        const zodParsedData = userCreateValidationSchema.parse(userData);
-        const user = await userServices.creteUser(zodParsedData);
-
-        let result = user as any;
+        const zodParsedData = user_validation_1.userCreateValidationSchema.parse(userData);
+        const user = yield user_service_1.userServices.creteUser(zodParsedData);
+        let result = user;
         result = result.toObject();
         delete result.orders;
         delete result.password;
-
         res.status(201).json({
             status: "success",
             messagee: "user created successfully",
             data: result,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         console.log(err.message, "create-user error");
         res.status(500).json({
             status: "fail",
@@ -27,54 +35,55 @@ const createUser = async (req: Request, res: Response) => {
             error: err,
         });
     }
-};
-const getAllUsers = async (req: Request, res: Response) => {
+});
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = await userServices.getAllUsers();
+        const result = yield user_service_1.userServices.getAllUsers();
         res.status(200).json({
             status: "success",
             messagee: "users fetched successfully",
             data: result,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         console.log(err);
         res.status(500).json({
             status: "fail",
             message: "Something went wrong",
         });
     }
-};
-const getSingleUser = async (req: Request, res: Response) => {
+});
+const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const result = await userServices.getSingleUser(id);
+        const result = yield user_service_1.userServices.getSingleUser(id);
         res.status(200).json({
             status: "success",
             messagee: "user fetched successfully",
             data: result,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         console.log(err);
         res.status(500).json({
             status: "fail",
             message: "Something went wrong",
         });
     }
-};
-const updateUser = async (req: Request, res: Response) => {
+});
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const userData = req.body;
-
-        const zodParsedData = userUpdateValidationSchema.parse(userData);
-        const result = await userServices.updateUser(id, zodParsedData as IUserUpdate);
-
+        const zodParsedData = user_validation_1.userUpdateValidationSchema.parse(userData);
+        const result = yield user_service_1.userServices.updateUser(id, zodParsedData);
         res.status(200).json({
             status: "success",
             messagee: "user updated successfully",
             data: result,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         if (err.Code === 404) {
             return res.status(404).json({
                 success: false,
@@ -88,21 +97,20 @@ const updateUser = async (req: Request, res: Response) => {
             error: err,
         });
     }
-};
-const addOrder = async (req: Request, res: Response) => {
+});
+const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.userId;
         const orderData = req.body;
-
         // const zodParsedData = userUpdateValidationSchema.parse(userData);
-        const result = await userServices.addOrder(id, orderData);
-
+        const result = yield user_service_1.userServices.addOrder(id, orderData);
         res.status(200).json({
             status: "success",
             messagee: "Order created successfully!",
             data: null,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         if (err.Code === 404) {
             return res.status(404).json({
                 success: false,
@@ -116,17 +124,18 @@ const addOrder = async (req: Request, res: Response) => {
             error: err,
         });
     }
-};
-const deleteUser = async (req: Request, res: Response) => {
+});
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const result = await userServices.deleteUser(id);
+        const result = yield user_service_1.userServices.deleteUser(id);
         res.status(200).json({
             success: true,
             message: "User deleted successfully!",
             data: null,
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         if (err.Code === 404) {
             return res.status(404).json({
                 success: false,
@@ -139,25 +148,27 @@ const deleteUser = async (req: Request, res: Response) => {
             message: "Something went wrong",
         });
     }
-};
-const getOrdersForUser = async (req: Request, res: Response) => {
+});
+const getOrdersForUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        const orders = await userServices.getOrdersForUser(userId);
-        if (orders?.length) {
+        const orders = yield user_service_1.userServices.getOrdersForUser(userId);
+        if (orders === null || orders === void 0 ? void 0 : orders.length) {
             res.status(200).json({
                 success: true,
                 message: "orders fetched successfully!",
                 data: { orders: orders },
             });
-        } else {
+        }
+        else {
             res.status(200).json({
                 success: true,
                 message: "User does not have any order yet",
                 // data: orders,
             });
         }
-    } catch (err: any) {
+    }
+    catch (err) {
         // console.log(err, 'errorrrr');
         if (err.Code === 404) {
             console.log(err, "errorrrr");
@@ -172,18 +183,18 @@ const getOrdersForUser = async (req: Request, res: Response) => {
             message: "Something went wrong",
         });
     }
-};
-const getTotalPriceForUser = async (req: Request, res: Response) => {
+});
+const getTotalPriceForUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        const totalPrice = await userServices.getTotalPriceForUser(userId);
-
+        const totalPrice = yield user_service_1.userServices.getTotalPriceForUser(userId);
         res.status(200).json({
             success: true,
             message: "Total price calculated successfully!",
             data: { totalPrice: totalPrice },
         });
-    } catch (err: any) {
+    }
+    catch (err) {
         if (err.Code === 404) {
             console.log(err, "errorrrr");
             return res.status(404).json({
@@ -197,9 +208,8 @@ const getTotalPriceForUser = async (req: Request, res: Response) => {
             message: "Something went wrong",
         });
     }
-};
-
-export const userController = {
+});
+exports.userController = {
     createUser,
     getAllUsers,
     getSingleUser,

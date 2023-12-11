@@ -1,7 +1,8 @@
 import { Schema, model } from "mongoose";
-import { IUser } from "../interfaces/user.interface";
+import { IUser, UserModel, orderData } from "../interfaces/user.interface";
+import bcrypt from "bcrypt";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel>(
     {
         userId: { type: Number, required: true },
         username: {
@@ -38,10 +39,28 @@ const userSchema = new Schema<IUser>(
     }
 );
 
-userSchema.post('save', function () {
-    delete this.password;
+userSchema.pre("save", function (next) {
+    bcrypt.hash(this.password, 10, (err, hash) => {
+        //using arrow function to use 'this' as document
+        this.password = hash;
+        next();
+    });
 });
 
+// userSchema.virtual("totalPrice").get(function (this: IUser & Document) {
+//     const totalPrice = this.orders.reduce((total, order) => (total += order.price * order.quantity), 0);
+//     return totalPrice;
+// });
 
-const User = model<IUser>("User", userSchema);
+userSchema.statics.isUserExists = async function (id) {
+    const existingUser = await User.findById(id);
+    return existingUser ? true : false;
+};
+
+userSchema.methods.addOrder = async function (orderData: orderData) {
+    if (!this.orders) this.orders = [];
+    await this.updateOne({ $push: { orders: orderData } });
+};
+
+const User = model<IUser, UserModel>("User", userSchema);
 export default User;

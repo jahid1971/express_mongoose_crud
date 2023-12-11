@@ -4,7 +4,7 @@ import config from "./config";
 
 async function server() {
     try {
-        await mongoose.connect(config.database_url_local as string);
+        await mongoose.connect("mongodb+srv://admin_um:admin12345@cluster0.wc2bte6.mongodb.net/project-mongoose?retryWrites=true&w=majority");
         console.log("Connected to MongoDB");
         app.listen(5000, () => {
             console.log(`Example app listening on port ${config.port}`);

@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userController = void 0;
 const user_service_1 = require("../services/user.service");
 const user_validation_1 = require("../validation/user.validation");
+const mongoose_1 = __importDefault(require("mongoose"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userData = req.body;
@@ -64,7 +68,17 @@ const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
+            });
+        }
         res.status(500).json({
             status: "fail",
             message: "Something went wrong",
@@ -84,11 +98,14 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (err) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -102,8 +119,8 @@ const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.userId;
         const orderData = req.body;
-        // const zodParsedData = userUpdateValidationSchema.parse(userData);
-        const result = yield user_service_1.userServices.addOrder(id, orderData);
+        const zodParsedData = user_validation_1.orderDataValidationSchema.parse(orderData);
+        yield user_service_1.userServices.addOrder(id, zodParsedData);
         res.status(200).json({
             status: "success",
             messagee: "Order created successfully!",
@@ -111,11 +128,14 @@ const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (err) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -136,11 +156,14 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (err) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -170,12 +193,14 @@ const getOrdersForUser = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (err) {
         // console.log(err, 'errorrrr');
-        if (err.Code === 404) {
-            console.log(err, "errorrrr");
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -195,12 +220,14 @@ const getTotalPriceForUser = (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (err) {
-        if (err.Code === 404) {
-            console.log(err, "errorrrr");
+        if (err instanceof mongoose_1.default.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({

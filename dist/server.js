@@ -14,14 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./config"));
 function server() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect("mongodb+srv://admin_um:admin12345@cluster0.wc2bte6.mongodb.net/project-mongoose?retryWrites=true&w=majority");
+            yield mongoose_1.default.connect(`mongodb+srv://admin_um:admin12345@cluster0.wc2bte6.mongodb.net/mongoose-express-crud-assign2?retryWrites=true&w=majority`);
             console.log("Connected to MongoDB");
             app_1.default.listen(5000, () => {
-                console.log(`Example app listening on port ${config_1.default.port}`);
+                console.log(`Example app listening on port 5000`);
             });
         }
         catch (error) {
@@ -29,4 +28,4 @@ function server() {
         }
     });
 }
-server().catch((err) => console.log(err));
+server().catch((err) => console.log(err, "......server error....."));

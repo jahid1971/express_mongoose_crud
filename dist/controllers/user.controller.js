@@ -120,7 +120,11 @@ const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = Number(req.params.userId);
         const orderData = req.body;
         const zodParsedData = user_validation_1.orderDataValidationSchema.parse(orderData);
+<<<<<<< HEAD
         yield user_service_1.userServices.addOrder(userId, zodParsedData);
+=======
+        yield user_service_1.userServices.addOrder(id, zodParsedData);
+>>>>>>> 938d7799da11f144676b4e2f607ad9aeb1c90fa8
         res.status(200).json({
             status: "success",
             messagee: "Order created successfully!",

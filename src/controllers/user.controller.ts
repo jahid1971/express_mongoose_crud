@@ -113,7 +113,11 @@ const addOrder = async (req: Request, res: Response) => {
         const orderData = req.body;
 
         const zodParsedData = orderDataValidationSchema.parse(orderData);
+<<<<<<< HEAD
         await userServices.addOrder(userId, zodParsedData);
+=======
+        await userServices.addOrder(id, zodParsedData);
+>>>>>>> 938d7799da11f144676b4e2f607ad9aeb1c90fa8
 
         res.status(200).json({
             status: "success",

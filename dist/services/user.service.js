@@ -22,10 +22,27 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.default.find().select("username fullName age email address");
     return result;
 });
+<<<<<<< HEAD
 const getSingleUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(yield user_model_1.default.isUserExists(userId))) { // confused here
         const error = new Error();
         console.log(error, "error in service to get user");
+=======
+const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(id))) {
+        const error = new Error();
+        console.log(error, 'error in service to get usesr');
+        error.code = 404;
+        error.description = "User not found!";
+        throw error;
+    }
+    const result = yield user_model_1.default.findById(id).select("-password -orders");
+    return result;
+});
+const updateUser = (id, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(id))) {
+        const error = new Error();
+>>>>>>> 938d7799da11f144676b4e2f607ad9aeb1c90fa8
         error.code = 404;
         error.description = "User not found!";
         throw error;
@@ -86,7 +103,11 @@ const getTotalPriceForUser = (userId) => __awaiter(void 0, void 0, void 0, funct
         error.description = "User not found!";
         throw error;
     }
+<<<<<<< HEAD
     const user = yield user_model_1.default.findOne({ userId });
+=======
+    const user = yield user_model_1.default.findById(id);
+>>>>>>> 938d7799da11f144676b4e2f607ad9aeb1c90fa8
     let totalPrice = (_a = user === null || user === void 0 ? void 0 : user.orders) === null || _a === void 0 ? void 0 : _a.reduce((total, order) => (total += order.price * order.quantity), 0);
     const roundedTotalPrice = Number(totalPrice).toFixed(2);
     return roundedTotalPrice;

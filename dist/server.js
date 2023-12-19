@@ -17,7 +17,11 @@ const mongoose_1 = __importDefault(require("mongoose"));
 function server() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+<<<<<<< HEAD
             yield mongoose_1.default.connect("mongodb+srv://admin_um:admin12345@cluster0.wc2bte6.mongodb.net/mongoose-express-crud-assign2?retryWrites=true&w=majority");
+=======
+            yield mongoose_1.default.connect(`mongodb+srv://admin_um:admin12345@cluster0.wc2bte6.mongodb.net/mongoose-express-crud-assign2?retryWrites=true&w=majority`);
+>>>>>>> 938d7799da11f144676b4e2f607ad9aeb1c90fa8
             console.log("Connected to MongoDB");
             app_1.default.listen(5000, () => {
                 console.log(`Example app listening on port 5000`);

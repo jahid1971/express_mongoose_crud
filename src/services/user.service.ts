@@ -10,70 +10,78 @@ const getAllUsers = async (): Promise<IUser[]> => {
     return result;
 };
 
-const getSingleUser = async (id: string): Promise<IUser | null> => {
-    const result = await User.findById(id);
-    return result;
-};
-
-const updateUser = async (id: string, userData: IUserUpdate): Promise<IUserUpdate | null> => {
-    if (!(await User.isUserExists(id))) {
+const getSingleUser = async (userId: number): Promise<IUser | null> => {
+    if (!(await User.isUserExists(userId))) {  // confused here
         const error: any = new Error();
-        error.Code = 404;
+        console.log(error, "error in service to get user");
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const result = await User.findByIdAndUpdate(id, userData, {
+    const result = await User.findOne({ userId }).select("-password -orders");
+    return result;
+};
+
+const updateUser = async (userId: number, userData: IUserUpdate): Promise<IUserUpdate | null> => {
+    if (!(await User.isUserExists(userId))) {
+        const error: any = new Error();
+        error.code = 404;
+        error.description = "User not found!";
+        throw error;
+    }
+    const result = await User.findOneAndUpdate({userId}, userData, {
         new: true,
         runValidators: true,
-    });
+    }).select("-password -orders");
     return result;
 };
 
-const deleteUser = async (id: string) => {
-    if (!(await User.isUserExists(id))) {
+const deleteUser = async (userId: number) => {
+    if (!(await User.isUserExists(userId))) {
         const error: any = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const result = await User.findByIdAndDelete(id);
+    const result = await User.findOneAndDelete({userId});
     return result;
 };
 
-const addOrder = async (id: string, orderData: orderData): Promise<IUser | undefined> => {
-    if (!(await User.isUserExists(id))) {
+const addOrder = async (userId: number, orderData: orderData): Promise<IUser | undefined> => {
+    if (!(await User.isUserExists(userId))) {
         const error: any = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = await User.findById(id);
+    const user = await User.findOne({userId});
     const result = user?.addOrder(orderData);
 
     return result;
 };
-const getOrdersForUser = async (id: string): Promise<orderData[] | undefined> => {
-    if (!(await User.isUserExists(id))) {
-        const error:any = new Error();
-        error.Code = 404;
+const getOrdersForUser = async (userId: number): Promise<orderData[] | undefined> => {
+    if (!(await User.isUserExists(userId))) {
+        const error: any = new Error();
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = await User.findById(id);
+    const user = await User.findOne({userId});
     const orders = user?.orders;
     return orders;
 };
-const getTotalPriceForUser = async (id: string) => {
-    if (!(await User.isUserExists(id))) {
-        const error:any = new Error();
-        error.Code = 404;
+const getTotalPriceForUser = async (userId: number) => {
+    if (!(await User.isUserExists(userId))) {
+        const error: any = new Error();
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = await User.findById(id);
+    const user = await User.findOne({userId});
 
-    const totalPrice = user?.orders?.reduce((total, order) => (total += order.price * order.quantity), 0);
-    return totalPrice;
+    let totalPrice = user?.orders?.reduce((total, order) => (total += order.price * order.quantity), 0);
+    const roundedTotalPrice = Number(totalPrice).toFixed(2);
+    return roundedTotalPrice;
 };
 
 export const userServices = {

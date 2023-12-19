@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { userServices } from "../services/user.service";
 import { IUser, IUserUpdate } from "../interfaces/user.interface";
-import { userCreateValidationSchema, userUpdateValidationSchema } from "../validation/user.validation";
+import {
+    orderDataValidationSchema,
+    userCreateValidationSchema,
+    userUpdateValidationSchema,
+} from "../validation/user.validation";
+import mongoose from "mongoose";
 
 const createUser = async (req: Request, res: Response) => {
     try {
@@ -46,15 +51,25 @@ const getAllUsers = async (req: Request, res: Response) => {
 };
 const getSingleUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
-        const result = await userServices.getSingleUser(id);
+        const userId = Number(req.params.userId); 
+        const result = await userServices.getSingleUser(userId);
         res.status(200).json({
             status: "success",
             messagee: "user fetched successfully",
             data: result,
         });
     } catch (err: any) {
-        console.log(err);
+        // console.log(err);
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
+            });
+        }
         res.status(500).json({
             status: "fail",
             message: "Something went wrong",
@@ -63,11 +78,11 @@ const getSingleUser = async (req: Request, res: Response) => {
 };
 const updateUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const userId = Number(req.params.userId);
         const userData = req.body;
 
         const zodParsedData = userUpdateValidationSchema.parse(userData);
-        const result = await userServices.updateUser(id, zodParsedData as IUserUpdate);
+        const result = await userServices.updateUser(userId, zodParsedData as IUserUpdate);
 
         res.status(200).json({
             status: "success",
@@ -75,11 +90,14 @@ const updateUser = async (req: Request, res: Response) => {
             data: result,
         });
     } catch (err: any) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -91,11 +109,11 @@ const updateUser = async (req: Request, res: Response) => {
 };
 const addOrder = async (req: Request, res: Response) => {
     try {
-        const id = req.params.userId;
+        const userId = Number(req.params.userId);
         const orderData = req.body;
 
-        // const zodParsedData = userUpdateValidationSchema.parse(userData);
-        const result = await userServices.addOrder(id, orderData);
+        const zodParsedData = orderDataValidationSchema.parse(orderData);
+        await userServices.addOrder(userId, zodParsedData);
 
         res.status(200).json({
             status: "success",
@@ -103,11 +121,14 @@ const addOrder = async (req: Request, res: Response) => {
             data: null,
         });
     } catch (err: any) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -119,19 +140,22 @@ const addOrder = async (req: Request, res: Response) => {
 };
 const deleteUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
-        const result = await userServices.deleteUser(id);
+        const userId = Number(req.params.userId);
+        const result = await userServices.deleteUser(userId);
         res.status(200).json({
             success: true,
             message: "User deleted successfully!",
             data: null,
         });
     } catch (err: any) {
-        if (err.Code === 404) {
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -142,7 +166,7 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 const getOrdersForUser = async (req: Request, res: Response) => {
     try {
-        const userId = req.params.userId;
+        const userId = Number(req.params.userId);
         const orders = await userServices.getOrdersForUser(userId);
         if (orders?.length) {
             res.status(200).json({
@@ -159,12 +183,14 @@ const getOrdersForUser = async (req: Request, res: Response) => {
         }
     } catch (err: any) {
         // console.log(err, 'errorrrr');
-        if (err.Code === 404) {
-            console.log(err, "errorrrr");
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({
@@ -175,7 +201,7 @@ const getOrdersForUser = async (req: Request, res: Response) => {
 };
 const getTotalPriceForUser = async (req: Request, res: Response) => {
     try {
-        const userId = req.params.userId;
+        const userId = Number(req.params.userId);
         const totalPrice = await userServices.getTotalPriceForUser(userId);
 
         res.status(200).json({
@@ -184,12 +210,14 @@ const getTotalPriceForUser = async (req: Request, res: Response) => {
             data: { totalPrice: totalPrice },
         });
     } catch (err: any) {
-        if (err.Code === 404) {
-            console.log(err, "errorrrr");
+        if (err instanceof mongoose.Error.CastError || err.code === 404) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
-                error: err,
+                error: {
+                    code: 404,
+                    description: "User not found!",
+                },
             });
         }
         res.status(500).json({

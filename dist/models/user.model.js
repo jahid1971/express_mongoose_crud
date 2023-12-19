@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.Schema({
-    userId: { type: Number, required: true },
+    userId: { type: Number, required: true, unique: true },
     username: {
         type: String,
         required: true,
@@ -53,14 +53,10 @@ userSchema.pre("save", function (next) {
         next();
     });
 });
-// userSchema.virtual("totalPrice").get(function (this: IUser & Document) {
-//     const totalPrice = this.orders.reduce((total, order) => (total += order.price * order.quantity), 0);
-//     return totalPrice;
-// });
 userSchema.statics.isUserExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const existingUser = yield User.findById(id);
-        return existingUser ? true : false;
+        const existingUser = yield User.findOne({ userId: id });
+        return existingUser;
     });
 };
 userSchema.methods.addOrder = function (orderData) {

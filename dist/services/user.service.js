@@ -22,66 +22,74 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.default.find().select("username fullName age email address");
     return result;
 });
-const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.default.findById(id);
-    return result;
-});
-const updateUser = (id, userData) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(yield user_model_1.default.isUserExists(id))) {
+const getSingleUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(userId))) { // confused here
         const error = new Error();
-        error.Code = 404;
+        console.log(error, "error in service to get user");
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const result = yield user_model_1.default.findByIdAndUpdate(id, userData, {
+    const result = yield user_model_1.default.findOne({ userId }).select("-password -orders");
+    return result;
+});
+const updateUser = (userId, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(userId))) {
+        const error = new Error();
+        error.code = 404;
+        error.description = "User not found!";
+        throw error;
+    }
+    const result = yield user_model_1.default.findOneAndUpdate({ userId }, userData, {
         new: true,
         runValidators: true,
-    });
+    }).select("-password -orders");
     return result;
 });
-const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(yield user_model_1.default.isUserExists(id))) {
+const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(userId))) {
         const error = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const result = yield user_model_1.default.findByIdAndDelete(id);
+    const result = yield user_model_1.default.findOneAndDelete({ userId });
     return result;
 });
-const addOrder = (id, orderData) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(yield user_model_1.default.isUserExists(id))) {
+const addOrder = (userId, orderData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(userId))) {
         const error = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = yield user_model_1.default.findById(id);
+    const user = yield user_model_1.default.findOne({ userId });
     const result = user === null || user === void 0 ? void 0 : user.addOrder(orderData);
     return result;
 });
-const getOrdersForUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(yield user_model_1.default.isUserExists(id))) {
+const getOrdersForUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield user_model_1.default.isUserExists(userId))) {
         const error = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = yield user_model_1.default.findById(id);
+    const user = yield user_model_1.default.findOne({ userId });
     const orders = user === null || user === void 0 ? void 0 : user.orders;
     return orders;
 });
-const getTotalPriceForUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getTotalPriceForUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    if (!(yield user_model_1.default.isUserExists(id))) {
+    if (!(yield user_model_1.default.isUserExists(userId))) {
         const error = new Error();
-        error.Code = 404;
+        error.code = 404;
         error.description = "User not found!";
         throw error;
     }
-    const user = yield user_model_1.default.findById(id);
-    const totalPrice = (_a = user === null || user === void 0 ? void 0 : user.orders) === null || _a === void 0 ? void 0 : _a.reduce((total, order) => (total += order.price * order.quantity), 0);
-    return totalPrice;
+    const user = yield user_model_1.default.findOne({ userId });
+    let totalPrice = (_a = user === null || user === void 0 ? void 0 : user.orders) === null || _a === void 0 ? void 0 : _a.reduce((total, order) => (total += order.price * order.quantity), 0);
+    const roundedTotalPrice = Number(totalPrice).toFixed(2);
+    return roundedTotalPrice;
 });
 exports.userServices = {
     creteUser,

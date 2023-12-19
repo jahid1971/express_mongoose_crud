@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userUpdateValidationSchema = exports.userCreateValidationSchema = void 0;
+exports.orderDataValidationSchema = exports.userUpdateValidationSchema = exports.userCreateValidationSchema = void 0;
 const zod_1 = require("zod");
 const userCreateValidationSchema = zod_1.z.object({
     userId: zod_1.z.number(),
@@ -58,3 +58,9 @@ const userUpdateValidationSchema = zod_1.z.object({
         .optional(),
 });
 exports.userUpdateValidationSchema = userUpdateValidationSchema;
+const orderDataValidationSchema = zod_1.z.object({
+    productName: zod_1.z.string(),
+    price: zod_1.z.number(),
+    quantity: zod_1.z.number(),
+});
+exports.orderDataValidationSchema = orderDataValidationSchema;

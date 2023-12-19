@@ -60,4 +60,10 @@ const userUpdateValidationSchema = z.object({
         .optional(),
 });
 
-export { userCreateValidationSchema, userUpdateValidationSchema };
+const orderDataValidationSchema = z.object({
+    productName: z.string(),
+    price: z.number(),
+    quantity: z.number(),
+});
+
+export { userCreateValidationSchema, userUpdateValidationSchema, orderDataValidationSchema };

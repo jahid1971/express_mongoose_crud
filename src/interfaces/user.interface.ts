@@ -40,7 +40,7 @@ interface IUserMethods {
 }
 
 interface UserModel extends Model<IUser, {}, IUserMethods> {
-    isUserExists(id: string): Promise<IUser | null>;
+    isUserExists(id: number): Promise<IUser | null>;
 }
 
 

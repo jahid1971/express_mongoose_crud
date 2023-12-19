@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema<IUser, UserModel>(
     {
-        userId: { type: Number, required: true },
+        userId: { type: Number, required: true, unique: true },
         username: {
             type: String,
             required: true,
@@ -47,14 +47,9 @@ userSchema.pre("save", function (next) {
     });
 });
 
-// userSchema.virtual("totalPrice").get(function (this: IUser & Document) {
-//     const totalPrice = this.orders.reduce((total, order) => (total += order.price * order.quantity), 0);
-//     return totalPrice;
-// });
-
-userSchema.statics.isUserExists = async function (id) {
-    const existingUser = await User.findById(id);
-    return existingUser ? true : false;
+userSchema.statics.isUserExists = async function (id: number) {
+    const existingUser = await User.findOne({ userId: id });
+    return existingUser;
 };
 
 userSchema.methods.addOrder = async function (orderData: orderData) {
